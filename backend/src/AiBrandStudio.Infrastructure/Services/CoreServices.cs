@@ -503,8 +503,11 @@ public static class SeedData
     {
         using var scope = sp.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        if (db.Database.IsRelational())
+        if (db.Database.IsSqlServer())
             await db.Database.MigrateAsync();
+        else if (db.Database.IsRelational())
+            // Migrations are authored for SQL Server; Sqlite/local uses EnsureCreated.
+            await db.Database.EnsureCreatedAsync();
         else
             await db.Database.EnsureCreatedAsync();
 
