@@ -121,5 +121,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(x => x.Action);
             e.Property(x => x.Action).HasMaxLength(128);
         });
+
+        // SQL Server rejects multiple cascade paths (e.g. User→Project→Export and User→Export).
+        foreach (var fk in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            fk.DeleteBehavior = DeleteBehavior.Restrict;
     }
 }

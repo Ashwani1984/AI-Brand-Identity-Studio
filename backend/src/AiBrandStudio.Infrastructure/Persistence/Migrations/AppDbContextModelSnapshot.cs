@@ -1013,7 +1013,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1028,7 +1028,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Project", "Project")
                         .WithOne("Brand")
                         .HasForeignKey("AiBrandStudio.Domain.Entities.Brand", "ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1039,7 +1039,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1054,7 +1054,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -1067,13 +1067,13 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -1086,7 +1086,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Brand", "Brand")
                         .WithMany("Fonts")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1097,7 +1097,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1108,7 +1108,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Brand", "Brand")
                         .WithMany("Logos")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1119,7 +1119,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1130,7 +1130,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1141,7 +1141,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1152,13 +1152,13 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Organization", "Organization")
                         .WithMany("Members")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany("OrganizationMemberships")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -1171,7 +1171,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Brand", "Brand")
                         .WithMany("Palettes")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1182,7 +1182,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1197,7 +1197,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany("Projects")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -1214,7 +1214,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -1227,7 +1227,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1242,13 +1242,13 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.SubscriptionPlan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");
@@ -1263,13 +1263,13 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("AiBrandStudio.Domain.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
@@ -1282,7 +1282,7 @@ namespace AiBrandStudio.Infrastructure.Persistence.Migrations
                     b.HasOne("AiBrandStudio.Domain.Entities.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
