@@ -3,7 +3,8 @@ node_modules/
 dist/
 bin/
 obj/
-storage/
+/storage/
+backend/src/AiBrandStudio.Api/storage/
 *.user
 *.suo
 .env

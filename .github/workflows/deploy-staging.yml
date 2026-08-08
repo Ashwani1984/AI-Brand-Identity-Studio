@@ -1,5 +1,7 @@
 name: deploy-staging
 
+# Enable automatic push deploy after staging secrets/vars are configured:
+# set repository variable ENABLE_STAGING_DEPLOY=true
 on:
   push:
     branches: [main, master]
@@ -11,6 +13,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_STAGING_DEPLOY == 'true'
     runs-on: ubuntu-latest
     environment: staging
     steps:

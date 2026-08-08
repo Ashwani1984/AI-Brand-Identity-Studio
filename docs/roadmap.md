@@ -13,7 +13,7 @@ This roadmap sequences work from core correctness through SaaS maturity. Each ph
 | 2     | Scale execution     | **Done** (2026-08-08) |
 | 3     | Enterprise frontend | **Done** (2026-08-08) |
 | 4     | Production ops      | **Done** (2026-08-08) |
-| 5     | SaaS maturity       | Not started           |
+| 5     | SaaS maturity       | **Done** (2026-08-08) |
 
 
 ---

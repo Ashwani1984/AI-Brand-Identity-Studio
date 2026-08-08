@@ -1,4 +1,4 @@
-# Deployment Guide — AI Brand Identity Studio
+
 
 Phase 1 covers **local Docker Compose** and an **Azure** outline (App Service + SQL + Redis + Blob).
 
@@ -6,12 +6,14 @@ Phase 1 covers **local Docker Compose** and an **Azure** outline (App Service + 
 
 ## 1. Prerequisites
 
-| Tool | Local | Azure |
-| --- | --- | --- |
-| Docker Desktop | Yes | Optional (build) |
-| .NET 10 SDK | For non-Docker API | Build pipeline |
-| Node.js 20+ | For non-Docker web | Build pipeline |
-| Azure CLI | Optional | Recommended |
+
+| Tool           | Local              | Azure            |
+| -------------- | ------------------ | ---------------- |
+| Docker Desktop | Yes                | Optional (build) |
+| .NET 10 SDK    | For non-Docker API | Build pipeline   |
+| Node.js 20+    | For non-Docker web | Build pipeline   |
+| Azure CLI      | Optional           | Recommended      |
+
 
 Copy `.env.example` → `.env` and set secrets before starting.
 
@@ -23,13 +25,15 @@ Copy `.env.example` → `.env` and set secrets before starting.
 
 File: `docker/docker-compose.yml` (services):
 
-| Service | Image / build | Ports | Role |
-| --- | --- | --- | --- |
-| `sql` | `mcr.microsoft.com/mssql/server:2022-latest` | `1433` | SQL Server |
-| `redis` | `redis:7-alpine` | `6379` | Cache / job status |
-| `api` | build `backend` Dockerfile | `5080` | ASP.NET Core API + SignalR |
-| `web` | build `frontend` Dockerfile | `3000` | Next.js 16 |
-| `storage` | volume or minio (optional) | — | Local asset files |
+
+| Service   | Image / build                                | Ports  | Role                       |
+| --------- | -------------------------------------------- | ------ | -------------------------- |
+| `sql`     | `mcr.microsoft.com/mssql/server:2022-latest` | `1433` | SQL Server                 |
+| `redis`   | `redis:7-alpine`                             | `6379` | Cache / job status         |
+| `api`     | build `backend` Dockerfile                   | `5080` | ASP.NET Core API + SignalR |
+| `web`     | build `frontend` Dockerfile                  | `3000` | Next.js 16                 |
+| `storage` | volume or minio (optional)                   | —      | Local asset files          |
+
 
 ### 2.2 Typical commands
 
@@ -40,9 +44,9 @@ cp .env.example .env
 docker compose -f docker/docker-compose.yml up --build
 ```
 
-- Web: http://localhost:3000  
-- API / Swagger: http://localhost:5080/swagger  
-- Health: http://localhost:5080/health  
+- Web: [http://localhost:3000](http://localhost:3000)  
+- API / Swagger: [http://localhost:5080/swagger](http://localhost:5080/swagger)  
+- Health: [http://localhost:5080/health](http://localhost:5080/health)
 
 ```bash
 # Tear down (keep volumes)
@@ -68,9 +72,9 @@ Pass through from `.env`:
 
 On API start (Development):
 
-1. Wait for SQL healthy  
-2. `Database.MigrateAsync()` applies EF migrations (startup seed calls this; do not use `EnsureCreated`)  
-3. Seed roles + plans  
+1. Wait for SQL healthy
+2. `Database.MigrateAsync()` applies EF migrations (startup seed calls this; do not use `EnsureCreated`)
+3. Seed roles + plans
 
 > Local SQLite: if you previously used `EnsureCreated`, delete `aibrandstudio.db` once so migrations can create a versioned schema.  
 
@@ -92,20 +96,20 @@ npm run dev
 
 ---
 
-## 3. Azure outline
+## 3. 
 
-### 3.1 Resource map
 
-| Resource | SKU guidance (MVP) | Purpose |
-| --- | --- | --- |
-| Resource Group | e.g. `rg-aibrand-dev` | Grouping |
-| Azure App Service (API) | Linux B1/B2 or P0v3 | Host `AiBrandStudio.Api` |
-| Azure App Service / Static Web / Container | Web on App Service or SWA + API separate | Next.js |
-| Azure SQL Database | Serverless or S0 | Primary DB |
-| Azure Cache for Redis | Basic C0 | Cache / SignalR scale-out backplane |
-| Azure Blob Storage | Standard LRS | Logos, exports |
-| Key Vault | Standard | JWT key, AI keys, Razorpay secrets |
-| Application Insights | — | Traces / requests |
+| Resource                                   | SKU guidance (MVPAzure outline3.1 Resource map) | Purpose                             |
+| ------------------------------------------ | ------------------------------------------------ | ----------------------------------- |
+| Resource Group                             | e.g. `rg-aibrand-dev`                            | Grouping                            |
+| Azure App Service (API)                    | Linux B1/B2 or P0v3                              | Host `AiBrandStudio.Api`            |
+| Azure App Service / Static Web / Container | Web on App Service or SWA + API separate         | Next.js                             |
+| Azure SQL Database                         | Serverless or S0                                 | Primary DB                          |
+| Azure Cache for Redis                      | Basic C0                                         | Cache / SignalR scale-out backplane |
+| Azure Blob Storage                         | Standard LRS                                     | Logos, exports                      |
+| Key Vault                                  | Standard                                         | JWT key, AI keys, Razorpay secrets  |
+| Application Insights                       | —                                                | Traces / requests                   |
+
 
 Optional later: Azure Container Apps or AKS using manifests under `k8s/`.
 
@@ -146,10 +150,10 @@ Cors__Origins=https://<web-host>
 
 ### 3.4 SQL
 
-1. Create Azure SQL logical server + database `AiBrandStudio`.  
-2. Allow App Service outbound IPs / use VNet integration.  
-3. Run EF migrations from CI or a one-off Job:  
-   `dotnet ef database update --connection "$CONN"`  
+1. Create Azure SQL logical server + database `AiBrandStudio`.
+2. Allow App Service outbound IPs / use VNet integration.
+3. Run EF migrations from CI or a one-off Job:
+  `dotnet ef database update --connection "$CONN"`
 4. Disable public access if using private endpoint (recommended for prod).
 
 ### 3.5 Redis
@@ -187,12 +191,14 @@ Details: see `cicd.md`.
 
 ## 4. SignalR on Azure
 
-| Concern | Approach |
-| --- | --- |
-| WebSockets | On in App Service config |
-| Scale-out | Redis backplane |
-| CORS | Exact frontend origin |
+
+| Concern         | Approach                          |
+| --------------- | --------------------------------- |
+| WebSockets      | On in App Service config          |
+| Scale-out       | Redis backplane                   |
+| CORS            | Exact frontend origin             |
 | Sticky sessions | Not required with Redis backplane |
+
 
 Hub path remains `/hubs/generation`.
 
@@ -211,6 +217,7 @@ Hub path remains `/hubs/generation`.
 
 ## 6. Rollback
 
-1. Redeploy previous App Service deployment slot (use staging slots).  
-2. DB migrations must be backward-compatible; avoid destructive column drops in the same release as API that still needs them.  
+1. Redeploy previous App Service deployment slot (use staging slots).
+2. DB migrations must be backward-compatible; avoid destructive column drops in the same release as API that still needs them.
 3. Keep prior container image tags immutable.
+
