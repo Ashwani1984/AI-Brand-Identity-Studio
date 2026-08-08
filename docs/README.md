@@ -9,6 +9,7 @@
 | [backups.md](backups.md) | RPO/RTO, Azure backup & restore drill |
 | [compliance.md](compliance.md) | Export/delete, consent, DPA checklist |
 | [qa-a11y.md](qa-a11y.md) | Lighthouse a11y baseline (dashboard + wizard) |
+| [staging-provision.md](staging-provision.md) | Azure staging + GitHub secrets one-shot |
 | [architecture.md](architecture.md) | Clean Architecture diagram & layers |
 | [SRS.md](SRS.md) | Software Requirement Specification |
 | [database-design.md](database-design.md) | Database design + ER diagram |

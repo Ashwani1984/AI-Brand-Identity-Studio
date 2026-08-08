@@ -7,6 +7,7 @@ using AiBrandStudio.Infrastructure.Services;
 using AiBrandStudio.Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,10 @@ public static class DependencyInjection
         var cs = config.GetConnectionString("DefaultConnection") ?? "Sqlite";
         services.AddDbContext<AppDbContext>(opt =>
         {
+            // Migrations are authored with the local Sqlite provider; SQL Server model
+            // differencing then raises PendingModelChangesWarning and aborts MigrateAsync.
+            opt.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+
             if (string.Equals(cs, "InMemory", StringComparison.OrdinalIgnoreCase))
                 opt.UseInMemoryDatabase("AiBrandStudio");
             else if (string.Equals(cs, "Sqlite", StringComparison.OrdinalIgnoreCase) ||
