@@ -197,6 +197,10 @@ var apiAppSettings = concat(
       name: 'WEBSITES_PORT'
       value: '8080'
     }
+    {
+      name: 'ASPNETCORE_URLS'
+      value: 'http://0.0.0.0:8080'
+    }
   ],
   deployRedis ? [
     {
