@@ -1,0 +1,105 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet restore AiBrandStudio.sln
+      - run: dotnet build AiBrandStudio.sln --no-restore -c Release
+      - run: dotnet test AiBrandStudio.sln --no-build -c Release
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5080
+
+  api-smoke:
+    needs: backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Start API
+        working-directory: backend
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__DefaultConnection: "Data Source=smoke.db"
+          Jwt__Key: CI_ONLY_TEST_KEY_AT_LEAST_32_CHARS_LONG!!
+          AI__DefaultTextProvider: Mock
+          AI__DefaultImageProvider: Mock
+          Storage__Provider: Local
+          Storage__LocalPath: ${{ runner.temp }}/storage
+          Observability__Enabled: "false"
+          Urls: http://127.0.0.1:5080
+        run: |
+          mkdir -p "${{ runner.temp }}/storage"
+          nohup dotnet run --project src/AiBrandStudio.Api/AiBrandStudio.Api.csproj -c Release --no-launch-profile > "${{ runner.temp }}/api.log" 2>&1 &
+          echo $! > "${{ runner.temp }}/api.pid"
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:5080/health >/dev/null; then
+              echo "API ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API failed to start"; cat "${{ runner.temp }}/api.log"; exit 1
+      - name: Run smoke
+        run: |
+          chmod +x scripts/smoke.sh
+          BASE=http://127.0.0.1:5080 ./scripts/smoke.sh
+      - name: Stop API
+        if: always()
+        run: |
+          if [ -f "${{ runner.temp }}/api.pid" ]; then kill "$(cat "${{ runner.temp }}/api.pid")" || true; fi
+
+  e2e:
+    needs: frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:5080
+      - run: npx playwright install --with-deps chromium
+      - name: Playwright smoke
+        run: npx playwright test
+        env:
+          CI: "true"
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:5080
+          PORT: "3000"

@@ -1,0 +1,69 @@
+# Standalone: SQL + Redis + two API replicas (ops drill)
+# Usage:
+#   docker compose -f docker/docker-compose.replicas.yml up -d --build
+#   BASE_A=http://localhost:5081 BASE_B=http://localhost:5082 node scripts/ops-drill-replicas.mjs
+
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_strong_Password123"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata_replicas:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Your_strong_Password123" -C -Q "SELECT 1" || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api-a:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    environment: &api-env
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=sql,1433;Database=AiBrandStudio;User Id=sa;Password=Your_strong_Password123;TrustServerCertificate=True;"
+      ConnectionStrings__Redis: redis:6379
+      Jwt__Issuer: AiBrandStudio
+      Jwt__Audience: AiBrandStudio
+      Jwt__Key: DOCKER_DEV_CHANGE_ME_TO_A_LONG_RANDOM_SECRET_KEY
+      Storage__LocalPath: /app/storage
+      AI__DefaultTextProvider: Mock
+      AI__DefaultImageProvider: Mock
+      Cors__Origins: http://localhost:3000,http://127.0.0.1:3000
+      ASPNETCORE_URLS: http://+:8080
+      Observability__Enabled: "false"
+    ports:
+      - "5081:8080"
+    volumes:
+      - apistorage_replicas:/app/storage
+    depends_on:
+      - sql
+      - redis
+
+  api-b:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    environment:
+      <<: *api-env
+    ports:
+      - "5082:8080"
+    volumes:
+      - apistorage_replicas:/app/storage
+    depends_on:
+      - sql
+      - redis
+
+volumes:
+  sqldata_replicas:
+  apistorage_replicas:

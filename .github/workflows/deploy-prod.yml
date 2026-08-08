@@ -1,0 +1,65 @@
+name: deploy-prod
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publish API
+        working-directory: backend
+        run: |
+          dotnet publish src/AiBrandStudio.Api/AiBrandStudio.Api.csproj -c Release -o "${{ runner.temp }}/api-publish"
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy API
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_API_APP_NAME_PROD }}
+          package: ${{ runner.temp }}/api-publish
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build web
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL_PROD }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_RELEASE: ${{ github.ref_name }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy web
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEB_APP_NAME_PROD }}
+          package: frontend
+
+      - name: Production smoke gate
+        env:
+          BASE: ${{ secrets.PROD_API_URL }}
+        run: |
+          chmod +x scripts/smoke.sh
+          ./scripts/smoke.sh

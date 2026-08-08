@@ -1,0 +1,6 @@
+@AiBrandStudio.Api_HostAddress = http://localhost:5023
+
+GET {{AiBrandStudio.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
