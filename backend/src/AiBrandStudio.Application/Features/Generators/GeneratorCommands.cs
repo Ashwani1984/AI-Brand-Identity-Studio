@@ -253,28 +253,34 @@ public class ExportZipHandler(
                 if (project.Brand?.Palettes.FirstOrDefault() is { } palette)
                 {
                     var css = archive.CreateEntry("02-palette/palette.css");
-                    await using var s = css.Open();
-                    var bytes = Encoding.UTF8.GetBytes(palette.CssExport ?? GeneratePaletteHandler.BuildCss(palette));
-                    await s.WriteAsync(bytes, cancellationToken);
+                    await using (var s = css.Open())
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(palette.CssExport ?? GeneratePaletteHandler.BuildCss(palette));
+                        await s.WriteAsync(bytes, cancellationToken);
+                    }
 
                     var json = archive.CreateEntry("02-palette/palette.json");
-                    await using var js = json.Open();
-                    var pj = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new
+                    await using (var js = json.Open())
                     {
-                        palette.PrimaryHex, palette.SecondaryHex, palette.AccentHex, palette.BackgroundHex, palette.TypographyHex
-                    }));
-                    await js.WriteAsync(pj, cancellationToken);
+                        var pj = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new
+                        {
+                            palette.PrimaryHex, palette.SecondaryHex, palette.AccentHex, palette.BackgroundHex, palette.TypographyHex
+                        }));
+                        await js.WriteAsync(pj, cancellationToken);
+                    }
                 }
 
                 if (project.Brand?.Fonts.FirstOrDefault() is { } font)
                 {
                     var fonts = archive.CreateEntry("03-typography/fonts.json");
-                    await using var s = fonts.Open();
-                    var bytes = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new
+                    await using (var s = fonts.Open())
                     {
-                        font.HeadlineFont, font.BodyFont, font.MonoFont, font.GoogleFontsUrl
-                    }));
-                    await s.WriteAsync(bytes, cancellationToken);
+                        var bytes = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new
+                        {
+                            font.HeadlineFont, font.BodyFont, font.MonoFont, font.GoogleFontsUrl
+                        }));
+                        await s.WriteAsync(bytes, cancellationToken);
+                    }
                 }
 
                 foreach (var logo in project.Brand?.Logos ?? [])
@@ -284,8 +290,8 @@ public class ExportZipHandler(
                     var data = await storage.ReadAsync(relative, cancellationToken);
                     if (data is null) continue;
                     var entry = archive.CreateEntry($"04-logos/{Path.GetFileName(relative)}");
-                    await using var s = entry.Open();
-                    await s.WriteAsync(data, cancellationToken);
+                    await using (var s = entry.Open())
+                        await s.WriteAsync(data, cancellationToken);
                 }
 
                 foreach (var asset in relatedAssets)
@@ -299,8 +305,8 @@ public class ExportZipHandler(
                         asset.Kind.Contains("Guideline") ? "06-guidelines" :
                         asset.Kind == "LandingPage" ? "07-landing" : "08-assets";
                     var entry = archive.CreateEntry($"{folder}/{asset.FileName}");
-                    await using var s = entry.Open();
-                    await s.WriteAsync(data, cancellationToken);
+                    await using (var s = entry.Open())
+                        await s.WriteAsync(data, cancellationToken);
                 }
             }
 
