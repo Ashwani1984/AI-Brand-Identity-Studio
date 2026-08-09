@@ -257,7 +257,23 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         }
         {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
-          value: 'true'
+          value: 'false'
+        }
+        {
+          name: 'ENABLE_ORYX_BUILD'
+          value: 'false'
+        }
+        {
+          name: 'WEBSITES_PORT'
+          value: '8080'
+        }
+        {
+          name: 'PORT'
+          value: '8080'
+        }
+        {
+          name: 'HOSTNAME'
+          value: '0.0.0.0'
         }
       ]
     }

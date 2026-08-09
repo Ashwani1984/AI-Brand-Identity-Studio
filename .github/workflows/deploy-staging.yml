@@ -53,12 +53,16 @@ jobs:
         run: |
           npm ci
           npm run build
+          # Standalone package for App Service (no Oryx rebuild)
+          cp -r public .next/standalone/ 2>/dev/null || true
+          mkdir -p .next/standalone/.next
+          cp -r .next/static .next/standalone/.next/
 
       - name: Deploy web to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEB_APP_NAME }}
-          package: frontend
+          package: frontend/.next/standalone
 
       - name: Staging smoke
         env:
